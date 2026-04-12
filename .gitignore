@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+
+# Reference PDF — copyrighted, not for distribution
+THE_SEGAL_METHOD_text.pdf
+
+# Debug screenshots
+after_login.png
+
+# Generated estimate outputs (re-run the wizard to regenerate)
+*.csv

@@ -1,0 +1,436 @@
+{
+  "_meta": {
+    "source": "selcobw.com",
+    "scraped": "2026-04-11",
+    "note": "All prices in GBP. Ex VAT = trade price before tax. Inc VAT = 20% added. Timber prices are per individual length."
+  },
+  "timber": {
+    "200x47mm_C24_treated": {
+      "description": "Sawn Treated Easi Edge 200x47mm C24 KD FSC",
+      "bom_role": "beam, roof joist",
+      "url": "https://www.selcobw.com/sawn-treated-easi-edge-200-x-47mm-8-x-2-kiln-dried-c24-fsc-020062105p",
+      "lengths": [
+        {
+          "length_m": 3.6,
+          "price_ex_vat": 16.47,
+          "price_inc_vat": 19.76,
+          "price_per_m_ex": 4.58
+        },
+        {
+          "length_m": 4.8,
+          "price_ex_vat": 21.96,
+          "price_inc_vat": 26.35,
+          "price_per_m_ex": 4.58
+        },
+        {
+          "length_m": 6.0,
+          "price_ex_vat": 28.49,
+          "price_inc_vat": 34.19,
+          "price_per_m_ex": 4.75
+        }
+      ]
+    },
+    "200x47mm_C16_treated": {
+      "description": "Sawn Treated Easi Edge 200x47mm C16 KD FSC",
+      "bom_role": "floor joist",
+      "url": "https://www.selcobw.com/sawn-treated-easi-edge-200-x-47mm-8-x-2-kiln-dried-c16-fsc-020061975p",
+      "lengths": [
+        {
+          "length_m": 3.0,
+          "price_ex_vat": 9.14,
+          "price_inc_vat": 10.97,
+          "price_per_m_ex": 3.05
+        },
+        {
+          "length_m": 3.6,
+          "price_ex_vat": 16.3,
+          "price_inc_vat": 19.56,
+          "price_per_m_ex": 4.53
+        },
+        {
+          "length_m": 4.2,
+          "price_ex_vat": 12.8,
+          "price_inc_vat": 15.36,
+          "price_per_m_ex": 3.05
+        },
+        {
+          "length_m": 4.8,
+          "price_ex_vat": 21.73,
+          "price_inc_vat": 26.08,
+          "price_per_m_ex": 4.53
+        }
+      ]
+    },
+    "100x47mm_C16_treated": {
+      "description": "Sawn Treated Easi Edge 100x47mm C16 KD FSC",
+      "bom_role": "structural post",
+      "url": "https://www.selcobw.com/sawn-treated-easi-edge-100-x-47mm-4-x-2-kiln-dried-c16-020062124",
+      "lengths": [
+        {
+          "length_m": 2.4,
+          "price_ex_vat": 4.56,
+          "price_inc_vat": 5.47,
+          "price_per_m_ex": 1.9
+        },
+        {
+          "length_m": 3.0,
+          "price_ex_vat": 5.7,
+          "price_inc_vat": 6.84,
+          "price_per_m_ex": 1.9
+        },
+        {
+          "length_m": 3.6,
+          "price_ex_vat": 6.84,
+          "price_inc_vat": 8.21,
+          "price_per_m_ex": 1.9
+        },
+        {
+          "length_m": 4.2,
+          "price_ex_vat": 6.4,
+          "price_inc_vat": 7.68,
+          "price_per_m_ex": 1.52
+        },
+        {
+          "length_m": 4.8,
+          "price_ex_vat": 9.12,
+          "price_inc_vat": 10.94,
+          "price_per_m_ex": 1.9
+        }
+      ]
+    },
+    "50x47mm_treated": {
+      "description": "Sawn Treated Green Easi Edge 50x47mm KD FSC",
+      "bom_role": "joist bearer, wall sole plate, wall block",
+      "url": "https://www.selcobw.com/sawn-treated-green-easi-edge-50-x-47mm-2-x-2-kiln-dried-fsc-020062070p",
+      "lengths": [
+        {
+          "length_m": 2.4,
+          "price_ex_vat": 2.04,
+          "price_inc_vat": 2.45,
+          "price_per_m_ex": 0.85
+        },
+        {
+          "length_m": 3.0,
+          "price_ex_vat": 4.62,
+          "price_inc_vat": 5.54,
+          "price_per_m_ex": 1.54
+        },
+        {
+          "length_m": 3.6,
+          "price_ex_vat": 5.55,
+          "price_inc_vat": 6.66,
+          "price_per_m_ex": 1.54
+        }
+      ]
+    },
+    "50x25mm_treated": {
+      "description": "Sawn Green Treated 50x25mm",
+      "bom_role": "wall clamping batten, cross-brace diagonal, fascia",
+      "url": "https://www.selcobw.com/sawn-green-treated-50-x-25mm-2-x-1-020061695p",
+      "lengths": [
+        {
+          "length_m": 3.0,
+          "price_ex_vat": 3.06,
+          "price_inc_vat": 3.67,
+          "price_per_m_ex": 1.02
+        },
+        {
+          "length_m": 3.6,
+          "price_ex_vat": 3.67,
+          "price_inc_vat": 4.4,
+          "price_per_m_ex": 1.02
+        },
+        {
+          "length_m": 4.2,
+          "price_ex_vat": 4.14,
+          "price_inc_vat": 4.97,
+          "price_per_m_ex": 0.99
+        },
+        {
+          "length_m": 4.8,
+          "price_ex_vat": 4.89,
+          "price_inc_vat": 5.87,
+          "price_per_m_ex": 1.02
+        }
+      ]
+    },
+    "50x25mm_roof_batten": {
+      "description": "Graded Roof Batten Treated 50x25mm",
+      "bom_role": "roof batten, capping",
+      "url": "https://www.selcobw.com/graded-roof-batten-treated-50-x-25mm-2-x-1-4-8m-pefc",
+      "lengths": [
+        {
+          "length_m": 3.6,
+          "price_ex_vat": 3.2,
+          "price_inc_vat": 3.84,
+          "price_per_m_ex": 0.89
+        },
+        {
+          "length_m": 3.9,
+          "price_ex_vat": 4.32,
+          "price_inc_vat": 5.18,
+          "price_per_m_ex": 1.11
+        },
+        {
+          "length_m": 4.2,
+          "price_ex_vat": 4.66,
+          "price_inc_vat": 5.59,
+          "price_per_m_ex": 1.11
+        },
+        {
+          "length_m": 4.5,
+          "price_ex_vat": 4.99,
+          "price_inc_vat": 5.99,
+          "price_per_m_ex": 1.11
+        },
+        {
+          "length_m": 4.8,
+          "price_ex_vat": 4.35,
+          "price_inc_vat": 5.22,
+          "price_per_m_ex": 0.91
+        },
+        {
+          "length_m": 5.1,
+          "price_ex_vat": 5.66,
+          "price_inc_vat": 6.79,
+          "price_per_m_ex": 1.11
+        },
+        {
+          "length_m": 5.4,
+          "price_ex_vat": 5.99,
+          "price_inc_vat": 7.19,
+          "price_per_m_ex": 1.11
+        }
+      ]
+    }
+  },
+  "sheet_materials": {
+    "osb3_18mm": {
+      "description": "SterlingOSB Zero OSB3 2440x1220x18mm FSC",
+      "bom_role": "tool-wall inner face",
+      "url": "https://www.selcobw.com/sterlingosb-zero-osb3-board-2440-x-1220-x-18mm-fscr",
+      "unit": "per sheet (2440x1220mm)",
+      "price_ex_vat": 20.07,
+      "price_inc_vat": 24.08
+    },
+    "plasterboard_12_5mm": {
+      "description": "Siniat Standard Square Edge Plasterboard 2400x1200x12.5mm",
+      "bom_role": "external wall inner face, partition finish, ceiling board",
+      "url": "https://www.selcobw.com/siniat-standard-square-edge-plasterboard-2400-x-1200-x-12-5mm",
+      "unit": "per sheet (2400x1200mm)",
+      "price_ex_vat": 9.78,
+      "price_inc_vat": 11.74
+    },
+    "plywood_6mm": {
+      "description": "General Purpose Plywood 2440x1220mm",
+      "bom_role": "insulation support panel",
+      "url": "https://www.selcobw.com/general-purpose-plywood-2440-x-1220mm",
+      "unit": "per sheet (2440x1220mm)",
+      "price_ex_vat": 10.75,
+      "price_inc_vat": 12.9
+    }
+  },
+  "insulation": {
+    "pir_100mm": {
+      "description": "IKO Enertherm PIR Insulation Board 2400x1200mm, 100mm thick",
+      "bom_role": "floor insulation",
+      "url": "https://www.selcobw.com/iko-enertherm-pir-insulation-board-2400-x-1200mm",
+      "unit": "per board (2400x1200mm, covers 2.88 m2)",
+      "price_ex_vat": 19.13,
+      "price_inc_vat": 22.96
+    }
+  },
+  "roofing": {
+    "felt_cap_sheet": {
+      "description": "IKO Trade Roofing Felt Green Mineral Cap Sheet 1x10m",
+      "bom_role": "roofing felt top layer",
+      "url": "https://www.selcobw.com/iko-trade-roofing-felt-green-mineral-cap-sheet-1-x-10m",
+      "unit": "per roll (1m x 10m = 10 m2)",
+      "price_ex_vat": 42.61,
+      "price_inc_vat": 51.13
+    },
+    "felt_underlay": {
+      "description": "IKO Roofing Shed Felt 1x10m",
+      "bom_role": "roofing felt underlay layers",
+      "url": "https://www.selcobw.com/iko-roofing-shed-felt-1-x-10m",
+      "unit": "per roll (1m x 10m = 10 m2)",
+      "price_ex_vat": 21.0,
+      "price_inc_vat": 25.2
+    },
+    "bitubond_25l": {
+      "description": "BituBond Roofing Felt Adhesive Black 25L",
+      "bom_role": "felt bonding (replaces hot bitumen)",
+      "url": "https://www.selcobw.com/bitubond-roofing-felt-adhesive-black-25ltr",
+      "unit": "per 25L drum",
+      "price_ex_vat": 104.83,
+      "price_inc_vat": 125.8
+    }
+  },
+  "flooring": {
+    "tg_board_150x25": {
+      "description": "PTG Redwood T&G Flooring 5th 150x25mm NOM PEFC",
+      "bom_role": "T&G softwood floor board",
+      "url": "https://www.selcobw.com/ptg-flooring-5th-redwood-150-x-25mm-nom-pefc",
+      "unit": "per metre",
+      "price_ex_vat": 3.92,
+      "price_inc_vat": 4.7
+    }
+  },
+  "fixings": {
+    "m12_150_bolt": {
+      "description": "Unifix Cup Square Hex Bolt & Nut M12x150mm",
+      "bom_role": "frame joint bolt",
+      "url": "https://www.selcobw.com/unifix-cup-square-hex-bolt-nut-m12-x-150mm",
+      "packs": [
+        {
+          "qty": 4,
+          "price_ex_vat": 4.5,
+          "price_inc_vat": 5.4,
+          "price_per_bolt_ex": 1.125
+        },
+        {
+          "qty": 10,
+          "price_ex_vat": 12.9,
+          "price_inc_vat": 15.48,
+          "price_per_bolt_ex": 1.29
+        }
+      ]
+    },
+    "m10_100_bolt": {
+      "description": "Unifix Cup Square Hex Bolt & Nut M10x100mm",
+      "bom_role": "joist-to-bearer bolt",
+      "url": "https://www.selcobw.com/unifix-cup-square-hex-bolt-nut-m10-x-100mm",
+      "packs": [
+        {
+          "qty": 5,
+          "price_ex_vat": 4.2,
+          "price_inc_vat": 5.04,
+          "price_per_bolt_ex": 0.84
+        },
+        {
+          "qty": 20,
+          "price_ex_vat": 8.7,
+          "price_inc_vat": 10.44,
+          "price_per_bolt_ex": 0.435
+        }
+      ]
+    },
+    "m8_100_bolt": {
+      "description": "Unifix Cup Square Hex Bolt & Nut M8x100mm",
+      "bom_role": "wall panel clamping bolt",
+      "url": "https://www.selcobw.com/unifix-cup-square-hex-bolt-nut-m8-x-100mm",
+      "packs": [
+        {
+          "qty": 5,
+          "price_ex_vat": 2.9,
+          "price_inc_vat": 3.48,
+          "price_per_bolt_ex": 0.58
+        },
+        {
+          "qty": 25,
+          "price_ex_vat": 10.7,
+          "price_inc_vat": 12.84,
+          "price_per_bolt_ex": 0.428
+        }
+      ]
+    },
+    "woodscrew_5x50": {
+      "description": "Twin Thread Woodscrew 5x50mm",
+      "bom_role": "board and batten fixing screw",
+      "url": "https://www.selcobw.com/twin-thread-woodscrew-5-x-50mm",
+      "packs": [
+        {
+          "qty": 200,
+          "price_ex_vat": 2.0,
+          "price_inc_vat": 2.4,
+          "price_per_screw_ex": 0.01
+        }
+      ]
+    }
+  },
+  "sundries": {
+    "wood_treatment": {
+      "description": "Ronseal Wood Treatment Clear",
+      "bom_role": "preservative wood stain",
+      "url": "https://www.selcobw.com/ronseal-wood-treatment-clear",
+      "unit": "per 2.5L tin",
+      "price_ex_vat": 31.56,
+      "price_inc_vat": 37.87
+    }
+  },
+  "specialist_suppliers": {
+    "_note": "Items not stocked at Selco. Prices researched April 2026 \u00e2\u20ac\u201d verify before ordering.",
+    "hardieplank_180mm": {
+      "description": "James HardiePlank Lap Cladding 3600x180x8mm",
+      "supplier": "Jewson",
+      "bom_role": "external weatherproof panel",
+      "url": "https://www.jewson.co.uk/p/james-hardieplank-cladding-3600-x-180-x-8mm-pearl-grey-IH548012",
+      "unit": "per board (3600x180mm)",
+      "board_coverage_m2": 0.55,
+      "price_ex_vat": 45.26,
+      "price_inc_vat": 54.31,
+      "note": "~0.55 m2 effective coverage per board (25mm lap). Colour choice at purchase."
+    },
+    "breather_membrane_roll": {
+      "description": "Tyvek Supro Breather Membrane 1.5m x 50m (75 m2 roll)",
+      "supplier": "Travis Perkins / Cross Country Building Services",
+      "bom_role": "breather membrane",
+      "url": "https://crosscountrybuildingservices.co.uk/product/tyvek-supro-breather-membrane-1-5m-x-50m-roll/",
+      "unit": "per roll (75 m2)",
+      "roll_m2": 75,
+      "price_ex_vat": 137.5,
+      "price_inc_vat": 165.0,
+      "note": "Allow 10% extra for overlaps."
+    },
+    "fascia_board_200x25": {
+      "description": "PAR Grooved Fascia Board 25x200mm (finished ~20x194mm)",
+      "supplier": "Bradfords / Davies Timber / Covers Merchants",
+      "bom_role": "roof fascia",
+      "url": "https://www.daviestimber.co.uk/products/25x200mm-5ths-redwood-par",
+      "unit": "per metre",
+      "price_ex_vat": 4.59,
+      "price_inc_vat": 5.51,
+      "note": "Regional pricing \u00e2\u20ac\u201d verify with local merchant."
+    },
+    "flat_roof_outlet_100mm": {
+      "description": "ACO Rainwater Roof Outlet Vertical Spigot 100mm with Flat Grate",
+      "supplier": "Roofing Superstore",
+      "bom_role": "roof outlet",
+      "url": "https://www.roofingsuperstore.co.uk/product/aco-rainwater-roof-outlet-vertical-spigot-with-flat-grate.html",
+      "unit": "each",
+      "price_ex_vat": 133.08,
+      "price_inc_vat": 159.7,
+      "note": "100mm vertical spigot; connect to 100mm downpipe."
+    },
+    "cedral_lap_190mm": {
+      "description": "Cedral Lap Fibre Cement Cladding 3600x190x10mm",
+      "supplier": "Builders merchant / Cedral stockist",
+      "bom_role": "external weatherproof panel (budget fibre cement alternative to HardiePlank)",
+      "unit": "per board (3600x190mm)",
+      "board_coverage_m2": 0.57,
+      "price_ex_vat": 30.0,
+      "price_inc_vat": 36.0,
+      "note": "Estimated trade price \u2014 verify with local stockist. ~0.57 m2 effective coverage per board (25mm lap)."
+    },
+    "corrugated_steel_sheet": {
+      "description": "Corrugated Galvanised Steel Sheet 0.7mm",
+      "supplier": "Travis Perkins / metal merchant",
+      "bom_role": "external weatherproof panel (steel cladding)",
+      "unit": "per m²",
+      "price_ex_vat_per_m2": 9.50,
+      "price_inc_vat_per_m2": 11.40,
+      "note": "Estimated trade price ~£9.50/m² ex VAT. Verify with local metal merchant or TP. Requires self-drilling tek screws. Allow 10% for overlaps."
+    },
+    "selco_shiplap_125x19mm": {
+      "description": "Softwood Cladding 125x19mm NOM PEFC",
+      "supplier": "Selco",
+      "bom_role": "external weatherproof panel (budget timber option)",
+      "url": "https://www.selcobw.com/softwood-cladding-125-x-19mm-5-x-nom-pefc",
+      "unit": "per linear metre",
+      "coverage_m2_per_lm": 0.1,
+      "price_ex_vat_per_lm": 2.54,
+      "price_inc_vat_per_lm": 3.05,
+      "note": "125mm board with 25mm lap gives 100mm effective cover = \u00a325.40/m2. Scraped 2026-04-12. Check if pre-treated or paint/stain required before installation. Verify AD B boundary distance before using on habitable walls."
+    }
+  }
+}
