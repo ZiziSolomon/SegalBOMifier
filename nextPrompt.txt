@@ -1,0 +1,155 @@
+Plan — layered simulation + ground-up geometry rebuild
+
+The plan reads linearly but Phase 4 feeds back into Phase 3 in practice
+(anaStruct says "post undersized" → change a parameter → geometry +
+foundations + BOM update). Parametric design in Phase 3 is what makes
+that loop cheap.
+
+================================================================
+Phase 1 — Clash detection (cheap, every build)
+================================================================
+
+- New simulation/clash.py. Function check_clashes(assembly, epsilon=1.0 mm³)
+  iterates solid pairs, raises with offending pair names if intersection
+  volume > ε.
+- Two-stage to keep it scalable:
+    Broad phase: AABB (axis-aligned bounding box) overlap test on every
+                 pair. Six float comparisons each, nanoseconds. build123d
+                 exposes .bounding_box() cheaply. ~0.1 s for 500 members.
+    Narrow phase: actual (A & B).volume boolean only on AABB-overlapping
+                  pairs. Tens to low hundreds of pairs in practice; a few
+                  ms each → 0.5–2 s total.
+- If it ever gets slow, swap broad phase for an R-tree (rtree package)
+  or BVH for O(n log n). Premature now.
+- Wire into build_cad() as a final step before return; failure surfaces
+  loudly.
+- Allow-list mechanism for intentional intersections (e.g. a joint
+  geometry we haven't refactored yet) so we can land it without fixing
+  every existing clash on day one.
+
+================================================================
+Phase 2 — PyBullet rigid-body sim (measure, then decide cadence)
+================================================================
+
+- New simulation/rigid_body.py.
+- Mesh export: each solid → STL via build123d's exporter.
+- URDF generator: one link per member (mass = volume × density;
+  pine ≈ 500 kg/m³, steel bolts ≈ 7850), one fixed joint per bolted
+  connection. Foundation pads pinned to world.
+- Run sim for ~2 s simulated time, log per-body translation/rotation.
+  Anything moving > ε is unattached / under-attached. Report which.
+- Decision gate: measure wall-clock time.
+    < ~5 s     → run every build
+    5–60 s     → run on demand + pre-commit
+    > 60 s     → run only when explicitly invoked
+- Output: pass/fail + a short list of "X drifted by Y mm" for diagnostics.
+
+================================================================
+Phase 3 — Ground-up geometry rebuild (parametric)
+================================================================
+
+Once sim is in place as the regression net, rebuild from scratch with
+each object defined by its structural role and connections.
+
+PARAMETRIC DESIGN — a hard requirement, not a nice-to-have
+-----------------------------------------------------------
+The dependency web is not tree-shaped in build order:
+  - Panel size + inter-panel beam size determine frame pitch, which
+    determines foundation post locations.
+  - Post cross-section depends on anaStruct's analysis result (Phase 4),
+    which in turn depends on the geometry.
+  - Foundation pad size depends on post loads, which depend on the frame.
+
+The model must carry SYMBOLIC PARAMETERS (panel_width, post_section,
+foundation_spacing, …) and CONSTRAINTS between them (e.g. frame_pitch =
+panel_width + inter_panel_beam_width; foundation_locations derived from
+frame grid; post_section ≥ anaStruct_result). Nothing resolves to a
+concrete millimetre value until a consumer demands it (rendering, BOM,
+sim). When Phase 4 says "post needs 100×100 not 75×75," changing one
+parameter cascades correctly through geometry, foundations, BOM.
+
+Implementation: hand-rolled Parameter / Expression / resolve() trio is
+probably sufficient at this scale. SymPy if it grows. Avoid baking in
+literal mm values during construction.
+
+FEA-READINESS RULES (from cad.py header — restated so they don't drift)
+------------------------------------------------------------------------
+  * Every member carries an identifiable structural ROLE (post, joist,
+    rafter, plate, brace, …). No anonymous geometry.
+  * Every connection is a first-class typed JOINT object linking
+    specific members at a specific point. Holes + bolts derived from
+    the joint, never authored independently.
+  * No fudging member positions for visual appeal — FEA sees through it.
+  * Centrelines, end points, and section properties stay queryable;
+    Phase 4 needs them.
+
+ORDER OF BUILD (current understanding)
+---------------------------------------
+  1. Foundations — pads/piers. Role: bear vertical load, anchor frame.
+  2. Sole plates / ground beams — tie foundations, distribute load to posts.
+  3. Posts — vertical compression members. Define which connect to which
+     sole plate, with which joint type.
+  4. Floor joists — span between sole plates / posts via known connection
+     (joist hanger? bolted lap?).
+  5. Wall plates / head beams — tie post tops, carry roof reactions.
+  6. Rafters / ridge / roof structure.
+  7. Bracing — diagonal members resisting racking. Critical for sim.
+  8. Cladding, panels, finishes — non-structural; modelled last and
+     excluded from the frame sim.
+
+PROCESS PER STEP
+-----------------
+Enumerate members and joint types on paper first. References:
+  - Walter Segal's drawings
+  - Lewisham self-build manuals
+  - https://www.instagram.com/a_house_on_aegina/  (Segal-adjacent, heavy
+    inspiration; not strictly Segal)
+
+Then encode roles + joints, then generate geometry from them. Sim runs
+after each step, so unattachment is caught immediately, not 200 commits
+later.
+
+================================================================
+Phase 4 — anaStruct frame analysis + EC5 hand-checks
+================================================================
+
+anaStruct IS the stress-analysis step (linear-elastic 2D frame solver),
+not a stress-consumer. Inputs needed are produced by Phase 3 + code
+prescriptions; no upstream 3D analysis required.
+
+INPUTS
+------
+  - Geometry, supports, member sections (E, A, I from timber spec):
+    fall out of Phase 3.
+  - Loads from codes + tributary-area decomposition:
+      * Self-weight: volume × density per member. Free.
+      * Floor live: EC1 part 1-1 prescribes kN/m² (e.g. 1.5 residential).
+        Joist at 600 mm spacing carries 0.6 m of floor.
+      * Snow: EC1 part 1-3 — ground snow for location × shape coefficient
+        for roof pitch → kN/m² on roof, decomposed to rafters.
+      * Wind: EC1 part 1-4 — basic wind velocity, exposure, height →
+        pressure on walls/roof, decomposed to members.
+      * Imposed roof: EC1.
+
+EC5 HAND-CHECKS (consume anaStruct's outputs)
+----------------------------------------------
+  - Member slenderness / out-of-plane buckling (anaStruct is 2D).
+  - Racking / lateral stability via bracing capacity.
+  - Bolted connection capacities per EC5 §8.
+  - Bearing checks at supports.
+
+FEEDBACK LOOP
+-------------
+Failures here mutate Phase 3 parameters (e.g. post_section, brace_count)
+and re-run. Parametric design makes this cheap.
+
+================================================================
+Phase 5 — 3D FEA (when warranted)
+================================================================
+
+CalculiX or Code_Aster, likely via FreeCAD FEM. Reach for it when:
+  - Plate behaviour matters (sheathing as diaphragm).
+  - Connection geometry is too complex for hand-checks.
+  - Buckling modes go beyond what EC5 slenderness checks cover.
+  - 3D load paths (e.g. corner posts) don't decompose cleanly to 2D
+    frames and the Phase 4 superposition trick stops being defensible.
