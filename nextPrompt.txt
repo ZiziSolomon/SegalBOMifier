@@ -32,13 +32,25 @@ Phase 2 — PyBullet rigid-body sim (measure, then decide cadence)
 ================================================================
 
 - New simulation/rigid_body.py.
-- Mesh export: each solid → STL via build123d's exporter.
-- URDF generator: one link per member (mass = volume × density;
-  pine ≈ 500 kg/m³, steel bolts ≈ 7850), one fixed joint per bolted
-  connection. Foundation pads pinned to world.
+- Foundation pads → mass = 0 (static / pinned to world; they are buried).
+  Paving slabs → dynamic concrete bodies; they rest on pads by collision,
+  same as posts rest on slabs. Only genuinely buried elements are pinned.
+  All other members → dynamic rigid bodies (mass = volume × density;
+  pine ≈ 500 kg/m³, steel bolts ≈ 7850 kg/m³, concrete ≈ 2400 kg/m³).
+- Connection model: bolt assemblies are JOINT_FIXED DETECTORS, not separate
+  rigid bodies. A bolt whose AABB overlaps two structural members creates one
+  PyBullet JOINT_FIXED constraint between those members. This is the correct
+  abstraction: bolts hold things together through clamping force (friction),
+  not through geometry — pure rigid-body collision cannot model a clearance-
+  hole bolted joint. Do NOT load bolt assemblies as separate PyBullet bodies
+  (they sit inside clearance holes at startup → overlapping-geometry explosion).
+- Currently bolt assemblies in cad.py are commented out → zero structural
+  constraints → frame falls → FAIL. This is the correct expected state.
+  Phase 3 must provide properly-modelled bolt assemblies before this can pass.
 - Run sim for ~2 s simulated time, log per-body translation/rotation.
   Anything moving > ε is unattached / under-attached. Report which.
-- Decision gate: measure wall-clock time.
+- Decision gate: measure wall-clock time (already measured: ~1.2 s on current
+  geometry → cadence: every_build).
     < ~5 s     → run every build
     5–60 s     → run on demand + pre-commit
     > 60 s     → run only when explicitly invoked
@@ -79,6 +91,11 @@ FEA-READINESS RULES (from cad.py header — restated so they don't drift)
   * Every connection is a first-class typed JOINT object linking
     specific members at a specific point. Holes + bolts derived from
     the joint, never authored independently.
+  * Each Joint must expose these parameters as queryable properties
+    (Phase 4 EC5 §8 needs them — don't bake them into geometry only):
+      bolt_diameter (mm), n_bolts, end_distance (mm), edge_distance (mm),
+      bolt_spacing (mm). These feed Johansen yield mode, embedding/bearing,
+      splitting/tear-out, and block-shear checks.
   * No fudging member positions for visual appeal — FEA sees through it.
   * Centrelines, end points, and section properties stay queryable;
     Phase 4 needs them.
@@ -135,7 +152,13 @@ EC5 HAND-CHECKS (consume anaStruct's outputs)
 ----------------------------------------------
   - Member slenderness / out-of-plane buckling (anaStruct is 2D).
   - Racking / lateral stability via bracing capacity.
-  - Bolted connection capacities per EC5 §8.
+  - Bolted connection capacities per EC5 §8: anaStruct gives the force
+    demand at each joint; EC5 §8 checks whether the bolt group can carry it.
+    Failure modes: fastener yield (Johansen, bolt size + steel grade),
+    embedding/bearing (timber density × bolt diameter), splitting/tear-out
+    (end + edge distances, bolt spacing along and across grain), block shear.
+    EC5 §8 is sufficient for typical Segal construction — FEA only if
+    connection geometry is too complex for the code simplifications.
   - Bearing checks at supports.
 
 FEEDBACK LOOP
