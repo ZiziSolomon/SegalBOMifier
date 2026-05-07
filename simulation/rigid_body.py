@@ -1,17 +1,20 @@
 """Phase 2 — PyBullet rigid-body drop test.
 
 Each leaf solid in the assembly becomes a rigid body whose mass is computed
-from its bounding-box volume × material density.  Foundation pads and paving
-slabs are pinned to the world (mass = 0).  All other members are dynamic.
+from its bounding-box volume × material density.  Foundation pads are pinned
+to the world (mass = 0).  Paving slabs are dynamic and rest on pads by
+gravity.  All other members are dynamic.
 
-Connections are NOT modelled as programmatic constraints.  When bolt
-assemblies are present in the assembly they are loaded as steel rigid bodies,
-and their physical geometry (head + shank passing through the clearance holes)
-is what holds the structure together — exactly as in reality.
+Connection model (Phase 3 will replace this with explicit joint objects)
+------------------------------------------------------------------------
+Structural members (posts, beams — not pads, slabs, or bolt assemblies)
+whose AABBs are within 1 mm of touching get a JOINT_FIXED constraint between
+them.  This correctly captures post-to-beam and beam-to-long-beam interfaces
+without requiring bolt assemblies to be present in the assembly.
 
-Currently the bolt assemblies in cad.py are commented out, so there are no
-physical connections in the simulation and every structural member will drift.
-That is the correct and expected result for the current state of the model.
+Bolt assemblies in cad.py are still commented out.  Once Phase 3 introduces
+first-class Joint objects, the constraint model here will be replaced by
+joint-derived constraints that carry the correct physical meaning.
 
 Decision gate (measured at runtime)
 ------------------------------------

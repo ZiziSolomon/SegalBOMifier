@@ -115,10 +115,11 @@ JOIST_COACH_BOLT = BoltSpec(
 
 # ── Foundations ──────────────────────────────────────────────────────────────
 
-FOUNDATION_PAD_WIDTH = 600  # mm square
-FOUNDATION_PAD_DEPTH = 500  # mm deep (or to suit soil)
-PAVING_SLAB_SIZE = 600  # mm square cap
-LEAD_SHEET_SIZE = 150  # mm square moisture seal
+FOUNDATION_PAD_WIDTH   = 600  # mm square plan
+FOUNDATION_PAD_DEPTH   = 500  # mm deep (or to suit soil)
+PAVING_SLAB_SIZE       = 600  # mm square cap (plan)
+PAVING_SLAB_THICKNESS  =  40  # mm; post base bears onto this
+LEAD_SHEET_SIZE        = 150  # mm square moisture seal
 
 
 # ── Roof ────────────────────────────────────────────────────────────────────

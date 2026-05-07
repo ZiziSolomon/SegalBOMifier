@@ -310,23 +310,26 @@ def _portal_frame(
     structural.append(tb)
 
     # --- Bolts at beam ends (2 bolts × 2 ends × 2 beams = 8 per frame) ---
-    if include_bolts:
-        bolt_z = [float(bs.width * f) for f in _BOLT_Z_FRACS]
-        for beam_z_bot, beam_name in ((z_hb, "hb"), (z_tb, "tb")):
-            for y_end, end_name, sign in (
-                (post_half, "south", +1.0),
-                (depth_mm - post_half, "north", -1.0),
-            ):
-                for off in _BOLT_OFFSETS:
-                    by = y_end + sign * off
-                    for bz_offset in bolt_z:
-                        b = _bolt_assy(mat.FRAME_BOLT, "y")
-                        b = b.move(Location((x_mm, by, beam_z_bot + bz_offset)))
-                        b.label = (
-                            f"bolt-{beam_name}-{end_name}"
-                            f"-x{int(x_mm)}-y{int(by)}-z{int(beam_z_bot+bz_offset)}"
-                        )
-                        bolt_parts.append(b)
+    # Commented out: bolt assemblies cause overlapping-geometry explosions in
+    # the PyBullet rigid-body sim (Phase 2).  Re-enable once joints are modelled
+    # as first-class objects that properly constrain the colliders.
+    # if include_bolts:
+    #     bolt_z = [float(bs.width * f) for f in _BOLT_Z_FRACS]
+    #     for beam_z_bot, beam_name in ((z_hb, "hb"), (z_tb, "tb")):
+    #         for y_end, end_name, sign in (
+    #             (post_half, "south", +1.0),
+    #             (depth_mm - post_half, "north", -1.0),
+    #         ):
+    #             for off in _BOLT_OFFSETS:
+    #                 by = y_end + sign * off
+    #                 for bz_offset in bolt_z:
+    #                     b = _bolt_assy(mat.FRAME_BOLT, "y")
+    #                     b = b.move(Location((x_mm, by, beam_z_bot + bz_offset)))
+    #                     b.label = (
+    #                         f"bolt-{beam_name}-{end_name}"
+    #                         f"-x{int(x_mm)}-y{int(by)}-z{int(beam_z_bot+bz_offset)}"
+    #                     )
+    #                     bolt_parts.append(b)
 
     return structural, bolt_parts
 
@@ -766,36 +769,45 @@ def _window_face(
 
 # ── Foundations ───────────────────────────────────────────────────────────────
 
-def _foundations(
-    building: SegalBuilding,
-    layout: dict[str, tuple[int, int]],
-) -> list:
-    """Concrete pad and paving-slab cap at each unique post position."""
-    g     = building.grid
-    pad_w = float(mat.FOUNDATION_PAD_WIDTH)     # 600 mm square
-    pad_d = float(mat.FOUNDATION_PAD_DEPTH)     # 500 mm deep (below ground)
-    slab_t = 40.0                               # paving slab cap (mm)
-    parts = []
+def _foundations(portal_xs: list[float], depth_mm: float) -> list:
+    """Concrete pad and paving-slab cap at each post position.
 
-    post_xy: set[tuple[float, float]] = set()
+    Post positions are the intersections of portal frame lines (portal_xs)
+    with the N-S building edges (y = 0 for the south line, y = depth_mm for
+    the north line).  These are exactly the same grid points that the portal
+    frames use for post placement — derived from one source, not re-computed.
 
-    for bay_name, (bx_mods, by_mods) in layout.items():
-        bay = building.bays[bay_name]
-        for dx in (0, bay.width_modules):
-            for dy in (0, bay.depth_modules):
-                x = float((bx_mods + dx) * g.module_pitch)
-                y = float((by_mods + dy) * g.module_pitch)
-                post_xy.add((x, y))
+    Z layout (origin = top of slab = post base level):
+        +---------- z = 0 (post base)
+        | slab cap  slab_t mm
+        +---------- z = -slab_t
+        | concrete  pad_d mm
+        +---------- z = -(pad_d + slab_t)  (bottom of pad, below ground)
+    """
+    pad_w  = float(mat.FOUNDATION_PAD_WIDTH)      # 600 mm square plan
+    pad_d  = float(mat.FOUNDATION_PAD_DEPTH)      # 500 mm deep below ground
+    slab_t = float(mat.PAVING_SLAB_THICKNESS)     # 40 mm cap; post base bears here
 
-    for (x, y) in sorted(post_xy):
-        # Concrete base (below ground, z = -pad_d to z = 0)
+    south_y = 0.0
+    north_y = depth_mm
+    post_ys = [south_y, north_y]
+
+    # One pad+slab per frame-line/building-edge intersection (deduplicated).
+    post_positions: set[tuple[float, float]] = {
+        (float(x), float(y)) for x in portal_xs for y in post_ys
+    }
+
+    parts: list = []
+    for (x, y) in sorted(post_positions):
+        # Concrete pad: buried below the slab.  Align.MAX on Z puts the top
+        # face at the given z coordinate.
         pad = Box(pad_w, pad_w, pad_d, align=(Align.CENTER, Align.CENTER, Align.MAX))
         pad = _col(pad, "concrete")
-        pad = pad.move(Location((x, y, 0.0)))
+        pad = pad.move(Location((x, y, -slab_t)))
         pad.label = f"pad-x{int(x)}-y{int(y)}"
         parts.append(pad)
 
-        # Paving slab cap (z = -slab_t to z = 0)
+        # Paving slab cap: z = -slab_t to z = 0 (post base).
         slab = Box(pad_w, pad_w, slab_t, align=(Align.CENTER, Align.CENTER, Align.MAX))
         slab = _col(slab, "concrete")
         slab = slab.move(Location((x, y, 0.0)))
@@ -815,6 +827,8 @@ def build_cad(
     include_floor: bool = True,
     include_roof: bool = True,
     include_walls: bool = True,
+    check_clashes: bool = True,
+    clash_allow_list: list[tuple[str, str]] | None = None,
 ) -> Compound:
     """Build a full CAD assembly of the building.
 
@@ -865,88 +879,87 @@ def build_cad(
         x_acc += bay.width_mm(g)
         portal_xs.append(float(x_acc))
 
+    top_children: list = []
+
     # ── Structure ────────────────────────────────────────────────────────────
-    # Each portal frame becomes its own sub-compound containing its members
-    # *and* the bolts that join them — bolts live with the assembly they fix.
-    frame_compounds: list = []
-    n_portals = len(portal_xs)
-    for i, x_mm in enumerate(portal_xs):
-        s, b = _portal_frame(building, x_mm, depth_mm, include_bolts)
-        if i == 0:
-            frame_label = f"frame-{i + 1:02d}-west-end"
-        elif i == n_portals - 1:
-            frame_label = f"frame-{i + 1:02d}-east-end"
-        else:
-            frame_label = f"frame-{i + 1:02d}"
-        frame_children = list(s)
-        if b:
-            frame_children.append(Compound(children=b, label="bolts"))
-        frame_compounds.append(Compound(children=frame_children, label=frame_label))
-
-    # Longitudinal eaves beams grouped by side
-    long_beams = _longitudinal_beams(building, portal_xs, depth_mm, include_bolts)
-    frame_compounds.append(Compound(children=long_beams, label="longitudinal-beams"))
-
-    top_children: list = [
-        Compound(children=frame_compounds, label="02-structural-frame")
-    ]
+    # TODO Phase 3: rebuild frame with first-class joint objects.
+    # frame_compounds: list = []
+    # n_portals = len(portal_xs)
+    # for i, x_mm in enumerate(portal_xs):
+    #     s, b = _portal_frame(building, x_mm, depth_mm, include_bolts)
+    #     if i == 0:
+    #         frame_label = f"frame-{i + 1:02d}-west-end"
+    #     elif i == n_portals - 1:
+    #         frame_label = f"frame-{i + 1:02d}-east-end"
+    #     else:
+    #         frame_label = f"frame-{i + 1:02d}"
+    #     frame_children = list(s)
+    #     if b:
+    #         frame_children.append(Compound(children=b, label="bolts"))
+    #     frame_compounds.append(Compound(children=frame_children, label=frame_label))
+    # long_beams = _longitudinal_beams(building, portal_xs, depth_mm, include_bolts)
+    # frame_compounds.append(Compound(children=long_beams, label="longitudinal-beams"))
+    # top_children.append(Compound(children=frame_compounds, label="02-structural-frame"))
 
     # ── Floor / Roof ─────────────────────────────────────────────────────────
-    if include_floor:
-        floor_parts = _floor(building, portal_xs, layout)
-        if floor_parts:
-            top_children.append(Compound(children=floor_parts, label="03-floor"))
-
-    if include_roof:
-        top_children.append(
-            Compound(children=_roof(building, portal_xs, depth_mm), label="05-roof")
-        )
+    # TODO Phase 3: add once sole plates and posts are in.
+    # if include_floor:
+    #     floor_parts = _floor(building, portal_xs, layout)
+    #     if floor_parts:
+    #         top_children.append(Compound(children=floor_parts, label="03-floor"))
+    # if include_roof:
+    #     top_children.append(
+    #         Compound(children=_roof(building, portal_xs, depth_mm), label="05-roof")
+    #     )
 
     # ── Walls: per bay → per face ─────────────────────────────────────────────
-    if include_walls:
-        bay_compounds: list = []
-        for bay_name, (bx_mods, by_mods) in layout.items():
-            bay    = building.bays[bay_name]
-            bx0    = float(bx_mods * g.module_pitch)
-            by0    = float(by_mods * g.module_pitch)
-            o_spec = outer_panel_specs.get(bay_name, mat.EXTERNAL_PANEL_OUTER)
-
-            face_compounds: list = []
-            for face in ("north", "south", "east", "west"):
-                wt = building.get_wall_type(bay_name, face)
-                if wt in (WallType.EXTERNAL, WallType.TOOL_WALL):
-                    face_parts = _wall_face_panels(
-                        building, bay_name, face, bx0, by0, o_spec
-                    )
-                    face_compounds.append(
-                        Compound(children=face_parts, label=face)
-                    )
-                elif wt == WallType.WINDOW:
-                    face_parts = _window_face(building, bay_name, face, bx0, by0)
-                    face_compounds.append(
-                        Compound(children=face_parts, label=f"{face} (glazed)")
-                    )
-                # WallType.OPEN / NONE: intentionally open — no geometry added
-
-            if face_compounds:
-                bay_compounds.append(
-                    Compound(children=face_compounds, label=bay_name)
-                )
-
-        if bay_compounds:
-            top_children.append(Compound(children=bay_compounds, label="04-walls"))
+    # TODO Phase 3: add once the frame is complete.
+    # if include_walls:
+    #     bay_compounds: list = []
+    #     for bay_name, (bx_mods, by_mods) in layout.items():
+    #         bay    = building.bays[bay_name]
+    #         bx0    = float(bx_mods * g.module_pitch)
+    #         by0    = float(by_mods * g.module_pitch)
+    #         o_spec = outer_panel_specs.get(bay_name, mat.EXTERNAL_PANEL_OUTER)
+    #         face_compounds: list = []
+    #         for face in ("north", "south", "east", "west"):
+    #             wt = building.get_wall_type(bay_name, face)
+    #             if wt in (WallType.EXTERNAL, WallType.TOOL_WALL):
+    #                 face_parts = _wall_face_panels(
+    #                     building, bay_name, face, bx0, by0, o_spec
+    #                 )
+    #                 face_compounds.append(Compound(children=face_parts, label=face))
+    #             elif wt == WallType.WINDOW:
+    #                 face_parts = _window_face(building, bay_name, face, bx0, by0)
+    #                 face_compounds.append(
+    #                     Compound(children=face_parts, label=f"{face} (glazed)")
+    #                 )
+    #         if face_compounds:
+    #             bay_compounds.append(Compound(children=face_compounds, label=bay_name))
+    #     if bay_compounds:
+    #         top_children.append(Compound(children=bay_compounds, label="04-walls"))
 
     # ── Foundations ──────────────────────────────────────────────────────────
     if include_foundations:
         top_children.insert(
             0,
             Compound(
-                children=_foundations(building, layout),
+                children=_foundations(portal_xs, depth_mm),
                 label="01-foundations",
             ),
         )
 
-    return Compound(children=top_children, label="Segal Build")
+    assembly = Compound(children=top_children, label="Segal Build")
+
+    # ── Phase 1: clash detection ─────────────────────────────────────────────
+    # Final sanity check before handing the assembly back. Failure raises
+    # ClashError listing the offending pairs. Add intentional intersections
+    # to clash_allow_list to land changes without fixing them all on day one.
+    if check_clashes:
+        from simulation.clash import check_clashes as _check_clashes
+        _check_clashes(assembly, allow_list=clash_allow_list)
+
+    return assembly
 
 
 # ── Export helpers ────────────────────────────────────────────────────────────
