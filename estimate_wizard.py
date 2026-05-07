@@ -17,9 +17,10 @@ Workflow
 
 from pathlib import Path
 
-from . import SegalBuilding, SegalGrid
-from . import materials as mat
-from .bom import BOM
+from building import SegalBuilding
+from grid import SegalGrid
+import materials as mat
+from bom import BOM, BOMCalculator
 
 
 # ── Cladding options ──────────────────────────────────────────────────────────
@@ -113,10 +114,11 @@ def _build_connected(
     outer_specs = {name: leanto_spec for name in bay_names}
     outer_specs["office"] = office_spec
 
-    return b.generate_bom(
+    return BOMCalculator(
+        b,
         include_foundations=include_foundations,
         outer_panel_specs=outer_specs,
-    )
+    ).calculate()
 
 
 def _build_separate(
@@ -135,18 +137,20 @@ def _build_separate(
         b_lt.add_bay(name, width=4, depth=4, enclosed=False)
     for i in range(n_leanto - 1):
         b_lt.connect(bay_names[i], "east", bay_names[i + 1], "west")
-    bom_lt = b_lt.generate_bom(
+    bom_lt = BOMCalculator(
+        b_lt,
         include_foundations=include_foundations,
         outer_panel_specs={name: leanto_spec for name in bay_names},
-    )
+    ).calculate()
 
     # Office
     b_off = SegalBuilding(grid)
     b_off.add_bay("office", width=4, depth=4, enclosed=True)
-    bom_off = b_off.generate_bom(
+    bom_off = BOMCalculator(
+        b_off,
         include_foundations=include_foundations,
         outer_panel_specs={"office": office_spec},
-    )
+    ).calculate()
 
     return bom_lt, bom_off
 

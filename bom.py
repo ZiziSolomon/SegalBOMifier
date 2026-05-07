@@ -13,9 +13,9 @@ from dataclasses import dataclass, field
 from io import StringIO
 from typing import Optional
 
-from .building import SegalBuilding, WallType, FACES, FACE_AXIS
-from .grid import SegalGrid
-from . import materials as mat
+from building import SegalBuilding, WallType, FACES, FACE_AXIS
+from grid import SegalGrid
+import materials as mat
 
 
 @dataclass
@@ -238,7 +238,7 @@ class BOM:
 
         Equivalent to ``Pricer().price_bom(self)``.
         """
-        from .pricing import Pricer
+        from pricing import Pricer
         return Pricer().price_bom(self)
 
 

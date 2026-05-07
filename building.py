@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional
 
-from .grid import SegalGrid
+from grid import SegalGrid
 
 
 FACES = ("north", "south", "east", "west")

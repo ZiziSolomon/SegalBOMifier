@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from .bom import BOM, BOMItem
+from bom import BOM, BOMItem
 
 
 CATALOGUE_PATH = Path(__file__).parent / "selco_catalogue.json"

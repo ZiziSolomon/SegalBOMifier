@@ -14,9 +14,9 @@ Usage:
     print(bom.to_table())
 """
 
-from .grid import SegalGrid
-from .building import Bay, SegalBuilding, WallType
-from .bom import BOM, BOMItem, BOMCalculator
+from grid import SegalGrid
+from building import Bay, SegalBuilding, WallType
+from bom import BOM, BOMItem, BOMCalculator
 
 
 def _attach_generate_bom(cls):
